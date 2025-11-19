@@ -152,7 +152,7 @@ namespace ifd {
 				ImGui::PushID(static_cast<int>(i));
 				if (!isFirstElement) {
 					ImGui::ArrowButtonEx("##dir_dropdown", ImGuiDir_Right, ImVec2(GUI_ELEMENT_SIZE, GUI_ELEMENT_SIZE));
-					anyOtherHC |= ImGui::IsItemHovered() | ImGui::IsItemClicked();
+					anyOtherHC |= (ImGui::IsItemHovered() || ImGui::IsItemClicked());
 					ImGui::SameLine();
 				}
 				if (ImGui::Button(btnList[i].c_str(), ImVec2(0, GUI_ELEMENT_SIZE))) {
@@ -171,10 +171,10 @@ namespace ifd {
 							newPath += "/";
 #endif
 					}
-					path = std::filesystem::u8path(newPath);
+					path = std::filesystem::path(newPath);
 					ret = true;
 				}
-				anyOtherHC |= ImGui::IsItemHovered() | ImGui::IsItemClicked();
+				anyOtherHC |= (ImGui::IsItemHovered() || ImGui::IsItemClicked());
 				ImGui::SameLine();
 				ImGui::PopID();
 
@@ -216,7 +216,7 @@ namespace ifd {
 			if (ImGui::InputTextEx("##pathbox_input", "", pathBuffer, 1024, size_arg, ImGuiInputTextFlags_EnterReturnsTrue)) {
 				std::string tempStr(pathBuffer);
 				if (std::filesystem::exists(tempStr))
-					path = std::filesystem::u8path(tempStr); 
+					path = std::filesystem::path(tempStr); 
 				ret = true;
 			}
 			if (!skipActiveCheck && !ImGui::IsItemActive())
@@ -466,7 +466,7 @@ namespace ifd {
 
 		m_parseFilter(filter);
 		if (!startingDir.empty())
-			m_setDirectory(std::filesystem::u8path(startingDir), false);
+			m_setDirectory(std::filesystem::path(startingDir), false);
 		else
 			m_setDirectory(m_currentDirectory, false); // refresh contents
 
@@ -490,7 +490,7 @@ namespace ifd {
 
 		m_parseFilter(filter);
 		if (!startingDir.empty())
-			m_setDirectory(std::filesystem::u8path(startingDir), false);
+			m_setDirectory(std::filesystem::path(startingDir), false);
 		else
 			m_setDirectory(m_currentDirectory, false); // refresh contents
 
@@ -560,7 +560,7 @@ namespace ifd {
 		if (std::count(m_favorites.begin(), m_favorites.end(), path) > 0)
 			return;
 
-		if (!std::filesystem::exists(std::filesystem::u8path(path)))
+		if (!std::filesystem::exists(std::filesystem::path(path)))
 			return;
 
 		m_favorites.push_back(path);
@@ -614,7 +614,7 @@ namespace ifd {
 		
 		if (hasResult) {
 			if (!m_isMultiselect || m_selections.size() <= 1) {
-				std::filesystem::path path = std::filesystem::u8path(filename);
+				std::filesystem::path path = std::filesystem::path(filename);
 				if (path.is_absolute()) m_result.push_back(path);
 				else m_result.push_back(m_currentDirectory / path);
 				if (m_type == IFD_DIALOG_DIRECTORY || m_type == IFD_DIALOG_FILE) {
@@ -1225,7 +1225,7 @@ namespace ifd {
 				ImGui::CloseCurrentPopup();
 			else {
 				const FileData& data = m_content[m_selectedFileItem];
-				ImGui::TextWrapped("Are you sure you want to delete %s?", data.Path.filename().u8string().c_str());
+				ImGui::TextWrapped("Are you sure you want to delete %s?", data.Path.filename().string().c_str());
 				if (ImGui::Button("Yes")) {
 					std::error_code ec;
 					std::filesystem::remove_all(data.Path, ec);
