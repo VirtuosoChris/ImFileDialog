@@ -126,9 +126,8 @@ namespace ifd {
 			std::vector<std::string> btnList;
 			float totalWidth = 0.0f;
 			for (auto comp : path) {
-				
-				std::u8string u8section = comp.u8string();
-				std::string section(u8section.begin(), u8section.end());
+
+				std::string section = comp.string();
 
 				if (section.size() == 1 && (section[0] == '\\' || section[0] == '/'))
 					continue;
